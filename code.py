@@ -40,10 +40,12 @@ pins = (
     board.GP18,
 )
 
-MEDIA = 1
-KEY = 2
-TYPE = 3
-RUN = 4
+SLEEP = 0 # (SLEEP, 1)
+MEDIA = 1 # (MEDIA, ConsumerControlCode.MUTE)
+KEY = 2 # (KEY, [Keycode.X]) OR (KEY, [Keycode.LEFT_CONTROL, Keycode.X])
+TYPE = 3 # (TYPE, "Ramandeep Singh")
+RUN = 4 # (RUN, "wt.exe")
+MACRO = 5 # (MACRO, [(RUN, "wt.exe"), (SLEEP, 1), (TYPE, "ssh root@192.168.29.2")])
 
 keymap = {
     (0): (KEY, [Keycode.LEFT_CONTROL, Keycode.X]),
@@ -72,6 +74,8 @@ encoder = rotaryio.IncrementalEncoder(board.GP16, board.GP17)
 last_position = encoder.position
 
 def keypress(key):
+    if key[0] == SLEEP:
+        time.sleep(key[1])
     if key[0] == KEY:
         kbd.send(*key[1])                        
     elif key[0] == MEDIA:
@@ -84,6 +88,9 @@ def keypress(key):
         kbdl.write(key[1])
         time.sleep(0.1)
         kbd.send(Keycode.RETURN)
+    elif key[0] == MACRO:
+        for macro in key[1]:
+            keypress(macro)
     else:
         print("unknown operation")
 
@@ -116,6 +123,5 @@ while True:
 
     time.sleep(0.01)  # debounce
     
-
 
 
