@@ -22,11 +22,7 @@ cc = ConsumerControl(usb_hid.devices)
 kbdl = KeyboardLayoutUS(kbd)
 
 # list of pins to use (DO NOT CHANGE)
-# board config according to schematics
-#      9
-# 2 5 8
-# 1 4 7
-# 0 3 6
+
 pins = (
     board.GP2,
     board.GP3,
@@ -47,6 +43,11 @@ TYPE = 3 # (TYPE, "Ramandeep Singh")
 RUN = 4 # (RUN, "wt.exe")
 MACRO = 5 # (MACRO, [(RUN, "wt.exe"), (SLEEP, 1), (TYPE, "ssh root@192.168.29.2")])
 
+# board config according to schematics
+#      9
+# 2 5 8
+# 1 4 7
+# 0 3 6
 keymap = {
     (0): (KEY, [Keycode.LEFT_CONTROL, Keycode.X]),
     (1): (TYPE, "Ramandeep Singh"),
@@ -123,5 +124,6 @@ while True:
 
     time.sleep(0.01)  # debounce
     
+
 
 
