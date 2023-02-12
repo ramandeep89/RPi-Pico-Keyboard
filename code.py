@@ -1,6 +1,4 @@
-# SPDX-FileCopyrightText: 2021 John Park for Adafruit Industries
-# SPDX-License-Identifier: MIT
-# RaspberryPi Pico RP2040 Mechanical Keyboard
+# RaspberryPi Pico Macroboard
 
 import time
 import board
@@ -17,13 +15,18 @@ print("---Pico Pad Keyboard---")
 
 led = DigitalInOut(board.LED)
 led.direction = Direction.OUTPUT
-led.value = True
+#led.value = True
 
 kbd = Keyboard(usb_hid.devices)
 cc = ConsumerControl(usb_hid.devices)
 kbdl = KeyboardLayoutUS(kbd)
 
-# list of pins to use (skipping GP15 on Pico because it's funky)
+# list of pins to use (DO NOT CHANGE)
+# board config according to schematics
+#      9
+# 2 5 8
+# 1 4 7
+# 0 3 6
 pins = (
     board.GP2,
     board.GP3,
@@ -68,6 +71,22 @@ switch_state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 encoder = rotaryio.IncrementalEncoder(board.GP16, board.GP17)
 last_position = encoder.position
 
+def keypress(key):
+    if key[0] == KEY:
+        kbd.send(*key[1])                        
+    elif key[0] == MEDIA:
+        cc.send(key[1])
+    elif key[0] == TYPE:
+        kbdl.write(key[1])
+    elif key[0] == RUN:
+        kbd.send(Keycode.GUI, Keycode.R)
+        time.sleep(0.1)
+        kbdl.write(key[1])
+        time.sleep(0.1)
+        kbd.send(Keycode.RETURN)
+    else:
+        print("unknown operation")
+
 while True:
     
     current_position = encoder.position
@@ -83,38 +102,20 @@ while True:
     last_position = current_position    
     
     for button in range(10):
-        if switch_state[button] == 0:
+        if not switch_state[button]:
             if not switches[button].value:
                 try:
-                    if keymap[button][0] == KEY:
-                        kbd.press(*keymap[button][1])
-                    elif keymap[button][0] == MEDIA:
-                        cc.send(keymap[button][1])
-                    elif keymap[button][0] == TYPE:
-                        kbdl.write(keymap[button][1])
-                    elif keymap[button][0] == RUN:
-                        kbd.press(Keycode.GUI, Keycode.R)
-                        kbd.release(Keycode.GUI, Keycode.R)
-                        time.sleep(0.1)
-                        kbdl.write(keymap[button][1])
-                        time.sleep(0.1)
-                        kbd.press(Keycode.RETURN)
-                        kbd.release(Keycode.RETURN)
-                    else:
-                        print("unknown operation")
+                    keypress(keymap[button])
                 except ValueError:  # deals w six key limit
                     pass
                 switch_state[button] = 1
 
-        if switch_state[button] == 1:
+        if switch_state[button]:
             if switches[button].value:
-                try:
-                    if keymap[button][0] == KEY:
-                        kbd.release(*keymap[button][1])
-
-                except ValueError:
-                    pass
                 switch_state[button] = 0
 
     time.sleep(0.01)  # debounce
+    
+
+
 
