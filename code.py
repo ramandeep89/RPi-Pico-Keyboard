@@ -69,26 +69,26 @@ MACRO = 5 # (MACRO, [(RUN, "wt.exe"), (SLEEP, 1), (TYPE, "ssh root@192.168.29.2"
 keymap = {
     (0): {
         (0): (KEY, [Keycode.LEFT_CONTROL, Keycode.X]),
-        (1): (TYPE, "Ramandeep Singh"),
-        (2): (KEY, [Keycode.LEFT_CONTROL, Keycode.Z]),
+	    (1): (MEDIA, ConsumerControlCode.SCAN_PREVIOUS_TRACK),
+        (2): ((MEDIA, ConsumerControlCode.MUTE),
         (3): (KEY, [Keycode.LEFT_CONTROL, Keycode.C]),
-        (4): (TYPE, "ramandeep89@gmail.com"),
-        (5): (KEY, [Keycode.LEFT_CONTROL, Keycode.LEFT_SHIFT, Keycode.Z]),
+        (4): (MEDIA, ConsumerControlCode.PLAY_PAUSE),
+        (5): (TYPE, "P@$$w0rd"),
         (6): (KEY, [Keycode.LEFT_CONTROL, Keycode.V]),
-        (7): (TYPE, "p3w.pew@yandex.com"),
+        (7): (MEDIA, ConsumerControlCode.SCAN_NEXT_TRACK),
         (8): (RUN, "wt.exe"),
         (9): (CHPRFL,),
     },
     (1): {
         (0): (KEY, [Keycode.LEFT_CONTROL, Keycode.X]),
-        (1): (TYPE, "Ramandeep Singh"),
-        (2): (KEY, [Keycode.LEFT_CONTROL, Keycode.Z]),
+	    (1): (MEDIA, ConsumerControlCode.SCAN_PREVIOUS_TRACK),
+        (2): ((MEDIA, ConsumerControlCode.MUTE),
         (3): (KEY, [Keycode.LEFT_CONTROL, Keycode.C]),
-        (4): (TYPE, "ramandeep89@gmail.com"),
-        (5): (KEY, [Keycode.LEFT_CONTROL, Keycode.LEFT_SHIFT, Keycode.Z]),
+        (4): (MEDIA, ConsumerControlCode.PLAY_PAUSE),
+        (5): (TYPE, "P@$$w0rd"),
         (6): (KEY, [Keycode.LEFT_CONTROL, Keycode.V]),
-        (7): (TYPE, "p3w.pew@yandex.com"),
-        (8): (MACRO, [(RUN, "wt.exe"), (SLEEP, 1), (TYPE, "ssh root@192.168.29.2")]),
+        (7): (MEDIA, ConsumerControlCode.SCAN_NEXT_TRACK),
+        (8): (RUN, "wt.exe"),
         (9): (CHPRFL,),
     },
 }
@@ -125,7 +125,7 @@ def keypress(key):
     elif key[0] == SLEEP:
         time.sleep(key[1])
     elif key[0] == KEY:
-        kbd.send(*key[1])                        
+        kbd.send(*key[1])
     elif key[0] == MEDIA:
         cc.send(key[1])
     elif key[0] == TYPE:
@@ -156,8 +156,7 @@ async def main():
             for _ in range(-position_change):
                 keypress(encodermap[profile][1])
             print(current_position)
-        last_position = current_position    
-        
+        last_position = current_position
         for button in range(10):
             if not switch_state[button]:
                 if not switches[button].value:
@@ -172,6 +171,5 @@ async def main():
                     switch_state[button] = 0
 
         time.sleep(0.01)  # debounce
-        
 
 asyncio.run(main())
